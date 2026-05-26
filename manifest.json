@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "PLINY PATCH — TikTok Rebel Upload (1080p60 Forever)",
+  "version": "6.9.420",
+  "description": "Forces max quality + 60fps. TikTok can’t touch this.",
+  "permissions": ["webRequest", "webRequestBlocking", "storage", "declarativeNetRequest"],
+  "host_permissions": ["*://*.tiktok.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": { "default_popup": "popup.html" }
+}
