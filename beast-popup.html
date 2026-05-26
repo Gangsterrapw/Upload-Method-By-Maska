@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Beast Method</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg: #08000e;
+  --surface: rgba(255, 255, 255, 0.02);
+  --surface-border: rgba(168, 85, 247, 0.15);
+  --surface-hover: rgba(168, 85, 247, 0.08);
+  --accent: #d946ef;
+  --accent2: #a855f7;
+  --accent3: #7c3aed;
+  --text: #e2d9f3;
+  --muted: #8b7fa3;
+  --faint: #4a4060;
+  --red: #ff3860;
+  --green: #23d160;
+  --font: 'Inter', -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 16px;
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body{
+  width:360px;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:13px;
+  overflow:hidden;
+  user-select:none;
+  position: relative;
+}
+
+.bg-blobs {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden; filter: blur(80px); opacity: 0.3; pointer-events: none;
+}
+.blob { position: absolute; border-radius: 50%; }
+.blob-1 { width: 300px; height: 300px; background: var(--accent3); top: -100px; left: -100px; }
+.blob-2 { width: 300px; height: 300px; background: var(--accent); bottom: -100px; right: -100px; }
+
+.ui-wrapper {
+  position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; gap: 12px; padding: 16px;
+}
+
+/* HEADER */
+.hdr {
+  display: flex; align-items: center; justify-content: space-between; padding: 4px 0;
+}
+.hdr-logo{display:flex;align-items:center;gap:12px}
+.logo-m{
+  font-family:var(--font); font-size:28px; font-weight:900;
+  background: linear-gradient(135deg, #d946ef, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height:1; filter: drop-shadow(0 0 8px rgba(217, 70, 239, 0.4));
+}
+.hdr-wordmark{display:flex;flex-direction:column}
+.hdr-title{font-size:12px;font-weight:800;color:var(--text);letter-spacing:0.04em;text-transform:uppercase}
+.hdr-sub{font-size:8px;font-weight:600;color:var(--faint);letter-spacing:0.1em;text-transform:uppercase;margin-top:1px}
+.hdr-ver{font-family:var(--mono);font-size:8px;color:var(--accent);letter-spacing:0.05em;background:rgba(217,70,239,0.08);padding:4px 8px;border-radius:6px;border:1px solid rgba(217,70,239,0.15)}
+
+/* GLASS CARD GENERIC */
+.card {
+  background: var(--surface); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--surface-border); border-radius: var(--radius); transition: all var(--transition); overflow: hidden;
+}
+
+/* TOGGLE SECTION */
+.section{padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px}
+.section-info{flex:1}
+.section-title{font-size:12px;font-weight:800;color:var(--text);letter-spacing:0.02em}
+.section-desc{font-size:9px;color:var(--muted);margin-top:2px;font-weight:500}
+.badge{
+  font-family:var(--mono);font-size:8px;padding:4px 8px;border-radius:6px;
+  border:1px solid rgba(217,70,239,0.15);color:var(--faint);background:rgba(0,0,0,0.2);
+  letter-spacing:0.06em;transition:all var(--transition);font-weight:700;
+}
+.badge.on{color:var(--accent);border-color:rgba(217,70,239,0.4);background:rgba(217,70,239,0.1);box-shadow:0 0 12px rgba(217,70,239,0.15)}
+
+.toggle{width:42px;height:24px;background:rgba(255,255,255,0.03);border:1px solid var(--surface-border);border-radius:12px;cursor:pointer;position:relative;transition:all var(--transition);flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-k{position:absolute;width:18px;height:18px;top:2px;left:2px;background:var(--faint);border-radius:50%;transition:all 0.3s cubic-bezier(.34,1.56,.64,1)}
+.toggle input:checked~.toggle-k{transform:translateX(18px);background:var(--accent);box-shadow:0 0 10px rgba(217,70,239,0.6)}
+.toggle.on{background:rgba(168,85,247,0.15);border-color:rgba(168,85,247,0.4)}
+
+/* DROPZONE */
+.dropzone{
+  padding:28px 20px;border:1.5px dashed var(--faint);border-radius:var(--radius);cursor:pointer;
+  transition:all var(--transition);display:flex;flex-direction:column;align-items:center;gap:10px;
+  background:rgba(255,255,255,0.01);position:relative;
+}
+.dropzone:hover{border-color:var(--accent2);background:var(--surface-hover);transform:translateY(-1px)}
+.dropzone.has-file{border-style:solid;border-color:rgba(217,70,239,0.3);background:rgba(168,85,247,0.05)}
+.dropzone.busy{opacity:.4;pointer-events:none;filter:grayscale(0.5)}
+.drop-icon{
+  width:48px;height:48px;border-radius:50%;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.15);
+  display:grid;place-items:center;transition:all var(--transition);
+}
+.drop-icon svg{width:20px;height:20px;color:var(--muted);transition:all var(--transition)}
+.dropzone:hover .drop-icon{background:rgba(168,85,247,0.15);border-color:rgba(168,85,247,0.3);transform:translateY(-2px)}
+.dropzone:hover .drop-icon svg{color:var(--accent)}
+.dropzone.has-file .drop-icon{background:rgba(217,70,239,0.15);border-color:var(--accent);box-shadow:0 0 20px rgba(217,70,239,0.2)}
+.dropzone.has-file .drop-icon svg{color:#fff}
+.drop-title{font-size:12px;font-weight:700;color:var(--text)}
+.drop-hint{font-size:9px;color:var(--faint);font-family:var(--mono);letter-spacing:0.02em}
+.drop-tag{
+  font-family:var(--mono);font-size:8px;background:rgba(168,85,247,0.08);color:var(--accent2);
+  padding:4px 12px;border-radius:20px;letter-spacing:0.1em;border:1px solid rgba(168,85,247,0.15);
+  transition:all var(--transition);font-weight:700;text-transform:uppercase;
+}
+.dropzone.has-file .drop-tag{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 4px 12px rgba(217,70,239,0.3)}
+
+/* ALERT */
+.alert{padding:10px 14px;border-radius:10px;background:rgba(255,56,96,0.06);border:1px solid rgba(255,56,96,0.15);font-family:var(--mono);font-size:9px;color:var(--red);display:none;align-items:center;gap:8px}
+.alert.show{display:flex}
+.alert svg{width:12px;height:12px;flex-shrink:0}
+
+/* STATS */
+.stats{display:flex;border-radius:12px;overflow:hidden;background:var(--surface);border:1px solid var(--surface-border)}
+.stat{flex:1;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:3px;border-right:1px solid var(--surface-border);transition:background var(--transition)}
+.stat:last-child{border-right:none}
+.stat.lit{background:rgba(168,85,247,0.06)}
+.stat.lit .stat-v{color:var(--text)}
+.stat.lit .stat-k{color:var(--accent2)}
+.stat-v{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--faint);font-variant-numeric:tabular-nums}
+.stat-k{font-family:var(--mono);font-size:7px;color:var(--faint);letter-spacing:0.12em;text-transform:uppercase;font-weight:700}
+
+/* CTA */
+.cta{
+  width:100%;height:46px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent3),var(--accent));
+  color:#fff;font-family:var(--font);font-size:12px;font-weight:800;
+  letter-spacing:0.06em;text-transform:uppercase;cursor:not-allowed;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all var(--transition);opacity:0.4;position:relative;overflow:hidden;
+}
+.cta svg{width:14px;height:14px;transition:transform var(--transition)}
+.cta.ready{
+  cursor:pointer;opacity:1;box-shadow:0 6px 20px rgba(217,70,239,0.3);
+}
+.cta.ready:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(217,70,239,0.5)}
+.cta.ready:hover svg{transform:translateY(-2px)}
+.cta.ready:active{transform:scale(0.97) translateY(0)}
+.cta.ok{background:var(--green);box-shadow:0 6px 20px rgba(35,209,96,0.3);cursor:default;opacity:1}
+
+/* CONSOLE */
+.con{border-radius:12px;overflow:hidden;background:var(--surface);border:1px solid var(--surface-border);display:flex;flex-direction:column}
+.con-head{background:rgba(0,0,0,0.15);padding:6px 12px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--surface-border)}
+.con-dot{width:5px;height:5px;border-radius:50%;background:var(--accent2);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.con-label{font-family:var(--mono);font-size:8px;color:var(--faint);letter-spacing:0.1em;font-weight:700}
+.con-body{
+  background:rgba(0,0,0,0.1);
+  height: 70px; max-height: 70px; overflow-y: auto;
+  padding:8px 12px;font-family:var(--mono);font-size:9px;line-height:1.6;
+  scrollbar-width:thin;scrollbar-color:rgba(168,85,247,0.2) transparent;
+}
+.log-line{color:var(--faint)}.log-line.highlight{color:var(--accent)}.log-line.success{color:var(--green)}.log-line.error{color:var(--red)}
+
+/* FOOTER */
+.foot{padding:4px 0;display:flex;align-items:center;justify-content:space-between}
+.foot-brand{font-family:var(--mono);font-size:8px;color:rgba(74,64,96,0.6);letter-spacing:0.12em;font-weight:700}
+.foot-links{display:flex;gap:14px}
+.foot-links a{font-size:9px;color:var(--faint);text-decoration:none;font-family:var(--mono);transition:all 0.15s;font-weight:500}
+.foot-links a:hover{color:var(--accent);text-shadow:0 0 8px rgba(217,70,239,0.4)}
+
+/* OVERLAY */
+.ov{position:fixed;inset:0;background:rgba(8,0,14,0.97);backdrop-filter:blur(15px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;z-index:999}
+.ov.show{display:flex}
+.ov-ring{position:relative;width:96px;height:96px}
+#beastRingCanvas{display:block}
+.ov-rc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+#beastOverlayPct{font-family:var(--font);font-size:20px;font-weight:900;color:#fff;text-shadow:0 0 10px rgba(255,255,255,0.2)}
+#beastRingLabel{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:0.14em;margin-top:2px}
+.ov-phase{font-family:var(--font);font-size:14px;font-weight:800;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;text-shadow:0 0 15px rgba(217,70,239,0.3)}
+.ov-sub{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center}
+.ov-bar{width:200px;height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden}
+#beastOverlayBar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent3),var(--accent));transition:width .3s;border-radius:2px}
+.ov-times{display:flex;gap:32px}
+.ov-t{display:flex;flex-direction:column;align-items:center;gap:2px}
+.ov-tv{font-family:var(--mono);font-size:13px;color:#fff;font-weight:600}
+.ov-tk{font-size:8px;color:var(--faint);letter-spacing:0.1em;font-family:var(--mono)}
+.ov-pipe{display:flex;align-items:center}
+.ms-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.08);transition:all .3s}
+.ms-dot.active{background:var(--accent);transform:scale(1.2);box-shadow:0 0 8px var(--accent)}
+.ms-dot.done{background:var(--accent3)}
+.ms-line{width:24px;height:1px;background:rgba(255,255,255,0.05);transition:background .3s}
+.ms-line.done{background:rgba(168,85,247,0.3)}
+
+input[type=file]{display:none}
+</style>
+</head>
+<body>
+<div class="bg-blobs"><div class="blob blob-1"></div><div class="blob blob-2"></div></div>
+<div class="ui-wrapper">
+  
+  <div class="hdr">
+    <div class="hdr-logo"><span class="logo-m">B</span><div class="hdr-wordmark"><span class="hdr-title">Beast Method</span><span class="hdr-sub">Quality Bypass</span></div></div>
+    <span class="hdr-ver">v1.0</span>
+  </div>
+
+  <div class="card" id="beastFpsCard">
+    <div class="section">
+      <div class="section-info"><div class="section-title">Force FPS Intercept</div><div class="section-desc">Strips TikTok compression limits</div></div>
+      <span class="badge" id="beastStatusPill">OFF</span>
+      <label class="toggle" id="beastToggleWrap"><input type="checkbox" id="beastToggleBtn"/><span class="toggle-k"></span></label>
+    </div>
+  </div>
+
+  <div class="dropzone" id="beastDropZone">
+    <div class="drop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+    <div class="drop-title" id="beastDropLabel">Drag & drop video</div>
+    <div class="drop-hint">or click to browse · 1080p · 60/120fps</div>
+    <span class="drop-tag" id="beastDropTag">SELECT FILE</span>
+    <input type="file" id="beastFileInput" accept="video/mp4,video/*"/>
+  </div>
+
+  <div class="alert" id="beastDownscaleNote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Resolution exceeds 1080p — Please downscale before uploading</div>
+
+  <div class="stats">
+    <div class="stat" id="sb-res"><span class="stat-v" id="ms-b-res">—</span><span class="stat-k">RES</span></div>
+    <div class="stat" id="sb-fps"><span class="stat-v" id="ms-b-fps">—</span><span class="stat-k">FPS</span></div>
+    <div class="stat" id="sb-kbps"><span class="stat-v" id="ms-b-kbps">—</span><span class="stat-k">MBIT</span></div>
+    <div class="stat" id="sb-mb"><span class="stat-v" id="ms-b-mb">—</span><span class="stat-k">MB</span></div>
+  </div>
+
+  <button class="cta" id="beastActionBtn" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+    <span id="beastActionLabel">Select a file first</span>
+  </button>
+
+  <div class="con">
+    <div class="con-head"><span class="con-dot"></span><span class="con-label">SYSTEM LOG</span></div>
+    <div class="con-body" id="beastTerminal"><div class="log-line highlight">// Beast ready</div></div>
+  </div>
+
+  <div class="foot">
+    <span class="foot-brand">BEAST·METHOD</span>
+    <nav class="foot-links">
+      <a href="https://tiktok.com/upload" target="_blank">Upload</a>
+      <a href="https://tiktok.com/creator-center" target="_blank">Studio</a>
+    </nav>
+  </div>
+
+</div>
+
+<div class="ov" id="beastOverlay">
+  <div class="ov-ring"><canvas id="beastRingCanvas" width="96" height="96"></canvas><div class="ov-rc"><span id="beastOverlayPct">0%</span><span id="beastRingLabel">SCAN</span></div></div>
+  <div class="ov-phase" id="beastOverlayPhase">INITIALIZING</div><div class="ov-sub" id="beastOverlaySub">Starting up...</div>
+  <div class="ov-bar"><div id="beastOverlayBar"></div></div>
+  <div class="ov-times"><div class="ov-t"><span class="ov-tv" id="beastOverlayElapsed">0:00</span><span class="ov-tk">Elapsed</span></div><div class="ov-t"><span class="ov-tv" id="beastOverlayEta">—</span><span class="ov-tk">ETA</span></div></div>
+  <div class="ov-pipe"><div class="ms-dot" id="msDot1"></div><div class="ms-line" id="msLine1"></div><div class="ms-dot" id="msDot2"></div><div class="ms-line" id="msLine2"></div><div class="ms-dot" id="msDot3"></div><div class="ms-line" id="msLine3"></div><div class="ms-dot" id="msDot4"></div></div>
+</div>
+
+<script src="beast-core.js"></script>
+<script src="beast-popup.js"></script>
+</body>
+</html>
